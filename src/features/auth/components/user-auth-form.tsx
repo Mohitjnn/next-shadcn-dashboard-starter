@@ -10,27 +10,35 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
-import { useTransition } from 'react';
+import { useRouter } from 'next/navigation';
+import { useState, useTransition } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import * as z from 'zod';
-import GithubSignInButton from './github-auth-button';
+import { OtpDialog } from '@/components/personal/authentication/LoginOtp';
+const phoneRegex = new RegExp(
+  /^([+]?[\s0-9]+)?(\d{3}|[(]?[0-9]+[)])?([-]?[\s]?[0-9])+$/
+);
 
 const formSchema = z.object({
-  email: z.string().email({ message: 'Enter a valid email address' })
+  email: z.string().email({ message: 'Enter a valid email address' }),
+  name: z.string({ message: 'Enter a valid email address' }),
+  phone: z.string().regex(phoneRegex, 'Invalid Number!')
 });
 
 type UserFormValue = z.infer<typeof formSchema>;
 
 export default function UserAuthForm() {
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl');
+  const router = useRouter();
   const [loading, startTransition] = useTransition();
+  const [showOtpDialog, setShowOtpDialog] = useState(false);
+
   const defaultValues = {
-    email: 'demo@gmail.com'
+    email: 'demo@gmail.com',
+    name: 'John Doe',
+    phone: '+1234567890'
   };
+
   const form = useForm<UserFormValue>({
     resolver: zodResolver(formSchema),
     defaultValues
@@ -38,11 +46,10 @@ export default function UserAuthForm() {
 
   const onSubmit = async (data: UserFormValue) => {
     startTransition(() => {
-      signIn('credentials', {
-        email: data.email,
-        callbackUrl: callbackUrl ?? '/dashboard'
-      });
-      toast.success('Signed In Successfully!');
+      console.log(data);
+      // Instead of directly routing, show OTP dialog
+      setShowOtpDialog(true);
+      toast.success('Verification code sent to your phone!');
     });
   };
 
@@ -53,6 +60,23 @@ export default function UserAuthForm() {
           onSubmit={form.handleSubmit(onSubmit)}
           className='w-full space-y-2'
         >
+          <FormField
+            control={form.control}
+            name='name'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Name</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='Enter your name'
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <FormField
             control={form.control}
             name='email'
@@ -71,6 +95,23 @@ export default function UserAuthForm() {
               </FormItem>
             )}
           />
+          <FormField
+            control={form.control}
+            name='phone'
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Phone</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder='Enter your Phone number'
+                    disabled={loading}
+                    {...field}
+                  />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
 
           <Button disabled={loading} className='ml-auto w-full' type='submit'>
             Continue With Email
@@ -81,13 +122,9 @@ export default function UserAuthForm() {
         <div className='absolute inset-0 flex items-center'>
           <span className='w-full border-t' />
         </div>
-        <div className='relative flex justify-center text-xs uppercase'>
-          <span className='bg-background px-2 text-muted-foreground'>
-            Or continue with
-          </span>
-        </div>
       </div>
-      <GithubSignInButton />
+
+      <OtpDialog open={showOtpDialog} onOpenChange={setShowOtpDialog} />
     </>
   );
 }

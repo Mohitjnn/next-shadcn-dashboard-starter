@@ -40,7 +40,6 @@ import {
   GalleryVerticalEnd,
   LogOut
 } from 'lucide-react';
-import { signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
@@ -52,10 +51,22 @@ export const company = {
   plan: 'Enterprise'
 };
 
+// Mock user data
+const mockUser = {
+  name: 'John Doe',
+  email: 'john.doe@example.com',
+  image: '' // Empty string for avatar fallback
+};
+
 export default function AppSidebar() {
-  const { data: session } = useSession();
+  // Removed useSession hook
   const pathname = usePathname();
   const { state, isMobile } = useSidebar();
+
+  const handleLogout = () => {
+    // Add your logout logic here
+    console.log('Logging out...');
+  };
 
   return (
     <Sidebar collapsible='icon'>
@@ -140,21 +151,16 @@ export default function AppSidebar() {
                   className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                 >
                   <Avatar className='h-8 w-8 rounded-lg'>
-                    <AvatarImage
-                      src={session?.user?.image || ''}
-                      alt={session?.user?.name || ''}
-                    />
+                    <AvatarImage src={mockUser.image} alt={mockUser.name} />
                     <AvatarFallback className='rounded-lg'>
-                      {session?.user?.name?.slice(0, 2)?.toUpperCase() || 'CN'}
+                      {mockUser.name.slice(0, 2).toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
                   <div className='grid flex-1 text-left text-sm leading-tight'>
                     <span className='truncate font-semibold'>
-                      {session?.user?.name || ''}
+                      {mockUser.name}
                     </span>
-                    <span className='truncate text-xs'>
-                      {session?.user?.email || ''}
-                    </span>
+                    <span className='truncate text-xs'>{mockUser.email}</span>
                   </div>
                   <ChevronsUpDown className='ml-auto size-4' />
                 </SidebarMenuButton>
@@ -168,23 +174,16 @@ export default function AppSidebar() {
                 <DropdownMenuLabel className='p-0 font-normal'>
                   <div className='flex items-center gap-2 px-1 py-1.5 text-left text-sm'>
                     <Avatar className='h-8 w-8 rounded-lg'>
-                      <AvatarImage
-                        src={session?.user?.image || ''}
-                        alt={session?.user?.name || ''}
-                      />
+                      <AvatarImage src={mockUser.image} alt={mockUser.name} />
                       <AvatarFallback className='rounded-lg'>
-                        {session?.user?.name?.slice(0, 2)?.toUpperCase() ||
-                          'CN'}
+                        {mockUser.name.slice(0, 2).toUpperCase()}
                       </AvatarFallback>
                     </Avatar>
                     <div className='grid flex-1 text-left text-sm leading-tight'>
                       <span className='truncate font-semibold'>
-                        {session?.user?.name || ''}
+                        {mockUser.name}
                       </span>
-                      <span className='truncate text-xs'>
-                        {' '}
-                        {session?.user?.email || ''}
-                      </span>
+                      <span className='truncate text-xs'>{mockUser.email}</span>
                     </div>
                   </div>
                 </DropdownMenuLabel>
@@ -205,7 +204,7 @@ export default function AppSidebar() {
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem onClick={() => signOut()}>
+                <DropdownMenuItem onClick={handleLogout}>
                   <LogOut />
                   Log out
                 </DropdownMenuItem>
