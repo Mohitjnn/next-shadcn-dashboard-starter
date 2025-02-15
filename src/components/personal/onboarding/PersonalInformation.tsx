@@ -15,9 +15,6 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const personalInfoSchema = z.object({
-  fullName: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  location: z.string().min(2, 'Location is required'),
   bio: z.string().min(20, 'Bio must be at least 20 characters')
 });
 
@@ -29,9 +26,6 @@ export function PersonalInfoForm({
   const form = useForm({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: {
-      fullName: '',
-      email: '',
-      location: '',
       bio: ''
     }
   });
@@ -41,53 +35,14 @@ export function PersonalInfoForm({
       <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
         <FormField
           control={form.control}
-          name='fullName'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Full Name</FormLabel>
-              <FormControl>
-                <Input placeholder='John Doe' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='email'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Email Address</FormLabel>
-              <FormControl>
-                <Input placeholder='john.doe@example.com' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name='location'
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Location</FormLabel>
-              <FormControl>
-                <Input placeholder='New York, USA' {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name='bio'
           render={({ field }) => (
             <FormItem>
               <FormLabel>Brief Bio/Background</FormLabel>
               <FormControl>
                 <Textarea
-                  placeholder='Tell us about yourself...'
-                  className='min-h-[100px]'
+                  placeholder='Tell us about yourself, interests, and business motivations...'
+                  className='min-h-[150px]'
                   {...field}
                 />
               </FormControl>

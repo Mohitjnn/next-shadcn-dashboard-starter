@@ -1,5 +1,4 @@
 'use client';
-import PageContainer from '@/components/layout/page-container';
 import { Button } from '@/components/ui/button';
 import {
   Card,
@@ -10,11 +9,12 @@ import {
 } from '@/components/ui/card';
 import { useState } from 'react';
 import { toast } from 'sonner';
-import { PersonalInfoForm } from '@/components/personal/onboarding/PersonalInformation';
+import PageContainer from '@/components/layout/page-container';
 import { BusinessPlanForm } from '@/components/personal/onboarding/BusinessPlan';
+import { PersonalInfoForm } from '@/components/personal/onboarding/PersonalInformation';
 import { WorkExperienceForm } from '@/components/personal/onboarding/WorkExperienceForm';
 import { useRouter } from 'next/navigation';
-// Main Onboarding Component
+
 export default function OnboardingForm() {
   const router = useRouter();
   const [step, setStep] = useState(1);
@@ -61,7 +61,7 @@ export default function OnboardingForm() {
 
   return (
     <PageContainer>
-      <Card className='w-full border-none shadow-none'>
+      <Card className='w-full rounded-none border-none'>
         <CardHeader>
           <CardTitle>
             Step {step} of 3: {stepTitles[step as keyof typeof stepTitles]}
