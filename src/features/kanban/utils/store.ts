@@ -8,8 +8,16 @@ export type Status = 'TODO' | 'IN_PROGRESS' | 'DONE';
 
 const defaultCols = [
   {
-    id: 'TODO' as const,
+    id: 'TODO',
     title: 'Todo'
+  },
+  {
+    id: 'IN_PROGRESS',
+    title: 'In Progress'
+  },
+  {
+    id: 'DONE',
+    title: 'Done'
   }
 ] satisfies Column[];
 
@@ -32,12 +40,38 @@ const initialTasks: Task[] = [
   {
     id: 'task1',
     status: 'TODO',
-    title: 'Project initiation and planning'
+    title: 'Project initiation and planning',
+    description: 'Define project scope and objectives'
   },
   {
     id: 'task2',
     status: 'TODO',
-    title: 'Gather requirements from stakeholders'
+    title: 'Gather requirements from stakeholders',
+    description: 'Schedule meetings with key stakeholders'
+  },
+  {
+    id: 'task3',
+    status: 'IN_PROGRESS',
+    title: 'Design system architecture',
+    description: 'Create technical specifications and diagrams'
+  },
+  {
+    id: 'task4',
+    status: 'IN_PROGRESS',
+    title: 'Develop MVP features',
+    description: 'Implement core functionality'
+  },
+  {
+    id: 'task5',
+    status: 'DONE',
+    title: 'Initial project setup',
+    description: 'Repository creation and development environment setup'
+  },
+  {
+    id: 'task6',
+    status: 'DONE',
+    title: 'Team onboarding',
+    description: 'Complete team member orientation and setup'
   }
 ];
 

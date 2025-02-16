@@ -1,7 +1,11 @@
+'use client';
 import PageContainer from '@/components/layout/page-container';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Image from 'next/image';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import Link from 'next/link';
 
 // Define the type for our card data
 interface CardData {
@@ -10,6 +14,35 @@ interface CardData {
   icon: React.ReactNode;
   backgroundImage: string;
 }
+
+interface NoteData {
+  title: string;
+  content: string;
+  updated: boolean;
+}
+
+interface NotesDataType {
+  [key: string]: NoteData;
+}
+
+// Mock data for notes (this would come from your backend in a real app)
+const PREFILLED_NOTES: NotesDataType = {
+  '2025-02-18': {
+    title: 'Team Meeting',
+    content: 'Discuss Q1 goals and project timeline',
+    updated: false
+  },
+  '2025-02-20': {
+    title: 'Client Presentation',
+    content: 'Present the new product features to ABC Corp',
+    updated: true
+  },
+  '2025-02-25': {
+    title: 'Product Launch',
+    content: 'Finalize details for the new product launch',
+    updated: false
+  }
+};
 
 const dashboardCards: CardData[] = [
   {
@@ -98,6 +131,36 @@ const dashboardCards: CardData[] = [
 ];
 
 export default function Page() {
+  const [notesData, setNotesData] = useState(PREFILLED_NOTES);
+
+  // Custom day renderer for the calendar
+  // Modify the renderDay function:
+  const renderDay = (day: Date) => {
+    const dateKey = format(day, 'yyyy-MM-dd');
+    const hasNote = notesData[dateKey] !== undefined;
+    const isUpdated = hasNote && notesData[dateKey].updated;
+    let bgColor = '';
+    let textColor = '';
+
+    if (hasNote) {
+      if (isUpdated) {
+        bgColor = 'bg-green-500';
+        textColor = 'text-white';
+      } else {
+        bgColor = 'bg-black border-white border-2';
+        textColor = 'text-white';
+      }
+    }
+
+    return (
+      <div
+        className={`flex h-14 w-14 items-center justify-center ${bgColor} ${textColor} ${hasNote ? 'rounded-full' : ''}`}
+      >
+        <Link href={`/Reminders?date=${dateKey}`}>{day.getDate()}</Link>
+      </div>
+    );
+  };
+
   return (
     <PageContainer>
       <div className='flex flex-1 flex-col space-y-2'>
@@ -127,7 +190,7 @@ export default function Page() {
                   <CardTitle className='text-m font-medium text-white'>
                     {card.title}
                   </CardTitle>
-                  <div className='text-white'>{card.icon}</div>
+                  <div className='text-card-foreground'>{card.icon}</div>
                 </CardHeader>
                 <CardContent>
                   <p className='mt-4 text-sm text-white'>{card.description}</p>
@@ -135,6 +198,52 @@ export default function Page() {
               </div>
             </Card>
           ))}
+        </div>
+        <div className='rounded-lg border p-4'>
+          <h3 className='mb-4 text-lg font-medium'>
+            Current Phase: Launch & Execution 🚀
+          </h3>
+          <ul className='list-disc pl-5 text-card-foreground'>
+            <li>
+              <strong>Tasks Completed:</strong> 12 / 20
+            </li>
+            <li>
+              <strong>Pending Tasks:</strong> 8 remaining
+            </li>
+            <li>
+              <strong>Milestone Deadline:</strong> Feb 25, 2025
+            </li>
+            <li>
+              <strong>Team Meetings Scheduled:</strong> 3 this week
+            </li>
+            <li>
+              <strong>Client Interactions:</strong> 5 meetings completed
+            </li>
+            <li>
+              <strong>Budget Utilized:</strong> 60% of allocated funds
+            </li>
+          </ul>
+        </div>
+
+        <div className='rounded-lg border p-4'>
+          <h3 className='mb-4 text-lg font-medium'>Calendar</h3>
+          <div className='mb-2 flex items-center space-x-4 text-sm text-gray-500'>
+            <div className='flex items-center'>
+              <div className='mr-2 h-3 w-3 rounded-full border-2 border-white bg-black'></div>
+              <span>Has notes</span>
+            </div>
+            <div className='flex items-center'>
+              <div className='mr-2 h-3 w-3 rounded-full bg-green-500'></div>
+              <span>Recently updated</span>
+            </div>
+          </div>
+          <Calendar
+            className='min-h-[400px] w-full'
+            mode='single'
+            components={{
+              Day: ({ date }) => renderDay(date)
+            }}
+          />
         </div>
       </div>
     </PageContainer>
